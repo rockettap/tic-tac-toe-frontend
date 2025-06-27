@@ -5,7 +5,6 @@ import { Component as UserLastGamesPage } from "@/features/user/user-last-games"
 import { Component as UserStatsPage } from "@/features/user/user-stats.page";
 import { Component as UserPage } from "@/features/user/user.page";
 import { ROUTES } from "@/shared/lib/paths";
-
 import {
   Navigate,
   Route,

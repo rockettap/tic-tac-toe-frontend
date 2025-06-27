@@ -1,5 +1,4 @@
 import { type PathParams, ROUTES } from "@/shared/lib/paths";
-
 import { useParams } from "react-router-dom";
 
 function UserLastGamesPage() {
