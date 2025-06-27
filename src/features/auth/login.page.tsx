@@ -1,13 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 
+import { toast } from "sonner";
+
+import useLogin from "./use-login";
+
 function LoginPage() {
   const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   useEffect(() => {
     console.log(import.meta.env.VITE_API_URL);
   }, []);
+
+  const { loginUser, loading } = useLogin();
+
+  const handleLogin = async () => {
+    const x = await loginUser(email, password);
+    if (!x) toast.error("Помилка!");
+  };
 
   return (
     <>
@@ -20,11 +33,22 @@ function LoginPage() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
+          placeholder="Пошта"
         />
 
-        <Button className="self-start" onClick={() => console.log("Click!")}>
-          Click {email?.trim() ? `(${email.trim()})` : ""}
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Пароль"
+        />
+
+        <Button
+          disabled={loading || (!email && !password)}
+          className="self-start"
+          onClick={handleLogin}
+        >
+          Увійти
         </Button>
       </div>
     </>
