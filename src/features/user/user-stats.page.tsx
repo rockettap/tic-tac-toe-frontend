@@ -1,5 +1,6 @@
-import { type PathParams, ROUTES } from "@/shared/lib/paths";
 import { useParams } from "react-router-dom";
+
+import { type PathParams, ROUTES } from "@/shared/lib/paths";
 
 function UserStatsPage() {
   const params = useParams<PathParams[typeof ROUTES.USER]>();

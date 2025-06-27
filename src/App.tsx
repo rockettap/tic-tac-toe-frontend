@@ -1,3 +1,10 @@
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
+
 import { Component as LoginPage } from "@/features/auth/login.page";
 import { Component as RegisterPage } from "@/features/auth/register.page";
 import { Header } from "@/features/header";
@@ -5,12 +12,6 @@ import { Component as UserLastGamesPage } from "@/features/user/user-last-games"
 import { Component as UserStatsPage } from "@/features/user/user-stats.page";
 import { Component as UserPage } from "@/features/user/user.page";
 import { ROUTES } from "@/shared/lib/paths";
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from "react-router-dom";
 import { Toaster } from "sonner";
 
 function App() {

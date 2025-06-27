@@ -7,6 +7,8 @@
   "importOrder": [
     "^react$",
     "^react-dom$",
+    "^react-router-dom$",
+    "^@tabler/icons-react$",
     "<THIRD_PARTY_MODULES>",
     "^@shared",
     "^@features",
