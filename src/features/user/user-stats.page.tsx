@@ -7,9 +7,11 @@ function UserStatsPage() {
 
   return (
     <>
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance py-6">
-        UserStatsPage, userId={params.userId}
-      </h1>
+      <div className="overflow-x-auto">
+        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance my-6">
+          UserStatsPage, userId={params.userId}
+        </h1>
+      </div>
     </>
   );
 }

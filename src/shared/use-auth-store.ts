@@ -14,6 +14,10 @@ interface AuthState {
   session: Session | null;
 }
 
+const isTokenExpired = (exp: number) => {
+  return Date.now() >= exp * 1000;
+};
+
 const useAuthStore = create<AuthState>((set) => {
   const token = localStorage.getItem("token");
   const session = token ? jwtDecode<Session>(token) : null;
@@ -28,8 +32,9 @@ const useAuthStore = create<AuthState>((set) => {
     },
     logout: () => {
       localStorage.removeItem("token");
-      set({ token: null });
+      set({ token: null, session: null });
     },
+    isTokenExpired,
   };
 });
 
