@@ -8,8 +8,8 @@ interface Player {
 }
 
 interface Board {
-  cells: (null | "X" | "O")[];
-  history: (null | "X" | "O")[][];
+  cells: ("X" | "O" | null)[];
+  history: ("X" | "O" | null)[][];
   currentTurn: "X" | "O";
 }
 
@@ -18,6 +18,7 @@ interface Game {
   players: Player[];
   board: Board;
   status: "IN_PROGRESS" | "FINISHED" | "INTERRUPTED";
+  winner: "X" | "O" | "Draw" | null;
   createdAt: Date;
   updatedAt: Date;
 }

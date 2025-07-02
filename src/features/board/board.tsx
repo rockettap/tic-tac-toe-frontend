@@ -1,12 +1,17 @@
 import { Cell } from "./cell";
 
-function Board() {
+type BoardProps = {
+  state: (null | "X" | "O")[];
+  onCellClick?: (row: number, col: number) => void;
+};
+
+function Board({ state, onCellClick }: BoardProps) {
   return (
     <div>
       <div
         style={{
           display: "inline-grid",
-          gridTemplateColumns: "repeat(3, 96px)",
+          gridTemplateColumns: `repeat(3, 96px)`,
           gap: "4px",
           borderRadius: "24px",
           overflow: "hidden",
@@ -14,17 +19,15 @@ function Board() {
           border: "4px solid #636366",
         }}
       >
-        <Cell value="O" onSquareClick={() => console.log(0, 0)} />
-        <Cell value="X" onSquareClick={() => console.log(0, 1)} />
-        <Cell value="O" onSquareClick={() => console.log(0, 2)} />
-
-        <Cell value={null} onSquareClick={() => console.log(1, 0)} />
-        <Cell value="X" onSquareClick={() => console.log(1, 1)} />
-        <Cell value="X" onSquareClick={() => console.log(1, 2)} />
-
-        <Cell value="O" onSquareClick={() => console.log(2, 0)} />
-        <Cell value={null} onSquareClick={() => console.log(2, 1)} />
-        <Cell value="O" onSquareClick={() => console.log(2, 2)} />
+        {state.map((value, index) => (
+          <Cell
+            key={index}
+            value={value}
+            onSquareClick={() =>
+              onCellClick?.(Math.floor(index / 3), index % 3)
+            }
+          />
+        ))}
       </div>
     </div>
   );

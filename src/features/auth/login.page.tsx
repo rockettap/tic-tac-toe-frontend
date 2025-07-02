@@ -34,9 +34,12 @@ function LoginPage() {
 
   return (
     <>
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance my-6">
-        LoginPage
-      </h1>
+      <div className="overflow-x-auto overflow-y-hidden my-6">
+        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
+          LoginPage
+        </h1>
+      </div>
+
       <div className="flex flex-col gap-3 max-w-xl">
         <Input
           type="email"

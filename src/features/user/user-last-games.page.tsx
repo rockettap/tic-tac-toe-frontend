@@ -1,15 +1,19 @@
 import { useEffect } from "react";
 
-import { useParams } from "react-router-dom";
+import { href, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
+import { Loader } from "@/shared/components/ui/loader";
 import { type PathParams, ROUTES } from "@/shared/lib/paths";
+
+import { Component as NotFoundPage } from "@/features/not-found/not-found.page";
 
 import useGames from "./use-games";
 
 function UserLastGamesPage() {
   const params = useParams<PathParams[typeof ROUTES.USER]>();
 
-  const { userLastGames, games, loading } = useGames();
+  const { userLastGames, games, loading: loadingGames } = useGames();
 
   useEffect(() => {
     if (params.userId) {
@@ -17,23 +21,34 @@ function UserLastGamesPage() {
     }
   }, [params.userId, userLastGames]);
 
+  if (loadingGames) {
+    return <Loader />;
+  }
+
+  if (games.length === 0) {
+    return <NotFoundPage />;
+  }
+
   return (
     <>
-      <div className="overflow-x-auto">
-        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance my-6">
+      <div className="overflow-x-auto overflow-y-hidden my-6">
+        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
           UserLastGamesPage, userId={params.userId}
         </h1>
       </div>
 
-      {loading ? (
-        <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold my-6">
-          LOADING
-        </pre>
-      ) : (
-        <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold my-6">
-          {JSON.stringify(games, null, 2)}
-        </pre>
-      )}
+      <ul className="ml-6 list-none [&>li]:mt-2 [&>li]:list-inside">
+        {games.map((item) => (
+          <li key={item.id} className="before:content-['–'] before:mr-2">
+            <Link
+              to={href(ROUTES.GAME, { gameId: item.id })}
+              className="text-blue-400 hover:text-blue-500 focus:text-blue-600 transition-colors duration-200"
+            >
+              {item.id}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </>
   );
 }

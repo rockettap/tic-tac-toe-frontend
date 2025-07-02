@@ -2,10 +2,13 @@ export const ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
   HOME: "/",
-  ROOM: "/room/:roomId",
-  USER_LAST_GAMES: "/user/:userId/games",
-  USER_STATS: "/user/:userId/stats",
-  USER: "/user/:userId",
+  ROOM: "/rooms/:roomId",
+  ROOM_CREATE: "/rooms/create",
+  ROOM_JOIN: "/rooms/join",
+  USER_LAST_GAMES: "/users/:userId/games",
+  USER_STATS: "/users/:userId/stats",
+  USER: "/users/:userId",
+  GAME: "/games/:gameId",
 } as const;
 
 export type PathParams = {
@@ -14,5 +17,8 @@ export type PathParams = {
   };
   [ROUTES.ROOM]: {
     roomId: string;
+  };
+  [ROUTES.GAME]: {
+    gameId: string;
   };
 };

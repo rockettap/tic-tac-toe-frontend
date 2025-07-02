@@ -12,7 +12,7 @@ export function Header() {
   const { session } = useAuthStore();
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate(ROUTES.HOME);
   };
 
   const handleAccountClick = () => {
@@ -35,7 +35,7 @@ export function Header() {
             style={{ padding: 0 }}
             onClick={handleBackClick}
           >
-            <IconArrowLeft /> назад
+            <IconArrowLeft /> до головної
           </Button>
         )}
 
@@ -59,7 +59,7 @@ export function Header() {
                     style={{ padding: 0 }}
                     onClick={handleLoginClick}
                   >
-                    Вхід <IconLogin2 />
+                    вхід <IconLogin2 />
                   </Button>
                 )
               )}

@@ -1,18 +1,33 @@
 import { Link, href } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
+import { Loader } from "@/shared/components/ui/loader";
 import { type PathParams, ROUTES } from "@/shared/lib/paths";
 import useAuthStore from "@/shared/use-auth-store";
+
+import { Component as NotFoundPage } from "@/features/not-found/not-found.page";
+
+import useUser from "./use-user";
 
 function UserPage() {
   const { logout, session } = useAuthStore();
 
   const params = useParams<PathParams[typeof ROUTES.USER]>();
 
+  const { user, loading } = useUser(params.userId);
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (!user) {
+    return <NotFoundPage />;
+  }
+
   return (
     <>
-      <div className="overflow-x-auto">
-        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance my-6">
+      <div className="overflow-x-auto overflow-y-hidden my-6">
+        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
           UserPage, userId={params.userId}
         </h1>
       </div>
