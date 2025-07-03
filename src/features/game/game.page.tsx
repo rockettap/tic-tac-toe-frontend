@@ -56,7 +56,7 @@ function GamePage() {
         </h1>
       </div>
 
-      {<Board state={boardState[currentMove]} />}
+      {<Board state={boardState[currentMove]} notAllowed={true} />}
 
       <div className="flex gap-4 my-4">
         <Button

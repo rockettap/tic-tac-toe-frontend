@@ -108,6 +108,8 @@ function RoomPage() {
     socket.on("disconnect", (reason) => {
       console.log("disconnect, reason:", reason);
 
+      setUsers([]);
+
       setDisconnected(true);
     });
 
@@ -156,33 +158,35 @@ function RoomPage() {
         </h1>
       </div>
 
-      <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold my-6">
-        gameIsActive={JSON.stringify(gameIsActive)}
-      </pre>
-
-      <Button
-        disabled={gameIsActive}
-        className="self-start w-full sm:w-auto"
-        onClick={handleStartGame}
-      >
-        Розпочати гру
-      </Button>
-
-      <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold my-6">
-        users={JSON.stringify(users)}
-      </pre>
-
-      {disconnected ? (
-        <div className="text-red-500 font-semibold my-6">
-          You have been disconnected from the server!
-        </div>
-      ) : (
-        <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold my-6">
-          TODO
+      <div className="my-6">
+        <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mb-6">
+          users={JSON.stringify(users)}
         </pre>
-      )}
 
-      <Board state={boardState} onCellClick={makeMove} />
+        <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mb-6">
+          gameIsActive={JSON.stringify(gameIsActive)}
+        </pre>
+
+        <Button
+          disabled={gameIsActive || users.length < 2}
+          className="self-start w-full sm:w-auto"
+          onClick={handleStartGame}
+        >
+          Розпочати гру
+        </Button>
+
+        {disconnected && (
+          <div className="text-red-500 font-semibold mt-6">
+            You have been disconnected from the server!
+          </div>
+        )}
+      </div>
+
+      <Board
+        state={boardState}
+        notAllowed={!gameIsActive}
+        onCellClick={makeMove}
+      />
     </>
   );
 }

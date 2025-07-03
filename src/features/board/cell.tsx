@@ -3,15 +3,17 @@ import CrossIcon from "@/assets/cross.min.svg";
 
 type CellProps = {
   value: null | "X" | "O";
+  notAllowed: boolean;
   onSquareClick: () => void;
 };
 
-function Cell({ value, onSquareClick }: CellProps) {
+function Cell({ value, onSquareClick, notAllowed }: CellProps) {
   return (
     <div
-      className="w-24 h-24 cursor-pointer rounded-[3px] flex items-center justify-center"
-      style={{ backgroundColor: "#2c2c2e" }}
-      onClick={onSquareClick}
+      className={`w-24 h-24 rounded-[3px] flex items-center justify-center bg-neutral-200 dark:bg-neutral-800 ${
+        notAllowed ? "cursor-not-allowed" : "cursor-pointer"
+      }`}
+      onClick={!notAllowed ? onSquareClick : undefined}
     >
       {value === "O" ? (
         <img src={CircleIcon} alt="Circle" />

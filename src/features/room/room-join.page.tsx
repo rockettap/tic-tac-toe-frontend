@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { href, useNavigate } from "react-router-dom";
 
@@ -8,12 +8,21 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { isValidObjectId } from "@/shared/lib/is-valid-object-id";
 import { ROUTES } from "@/shared/lib/paths";
+import useAuthStore from "@/shared/use-auth-store";
 
 function RoomJoinPage() {
   const [roomId, setRoomId] = useState<string>("");
   const [isValid, setIsValid] = useState<boolean>(false);
 
+  // TODO: ProtectedRoute
   const navigate = useNavigate();
+  const { session } = useAuthStore();
+
+  useEffect(() => {
+    if (!session?.sub) {
+      navigate(ROUTES.LOGIN);
+    }
+  }, [session, navigate]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setRoomId(e.target.value);

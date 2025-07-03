@@ -16,10 +16,6 @@ function LoginPage() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(import.meta.env.VITE_API_URL);
-  }, []);
-
   const { loginUser, loading } = useLogin();
 
   const handleLogin = async () => {
