@@ -11,10 +11,14 @@ const useRegister = () => {
     setLoading(true);
 
     try {
-      const response = await api.post("/auth/register", {
-        email,
-        password,
-      });
+      const response = await api.post(
+        "/auth/register",
+        {
+          email,
+          password,
+        },
+        { withCredentials: true },
+      );
 
       if (response.data && response.data.access_token) {
         login(response.data.access_token);

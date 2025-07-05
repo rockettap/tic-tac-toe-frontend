@@ -13,7 +13,7 @@ import useGames from "./use-games";
 function UserLastGamesPage() {
   const params = useParams<PathParams[typeof ROUTES.USER]>();
 
-  const { userLastGames, games, loading: loadingGames } = useGames();
+  const { userLastGames, games, loading } = useGames();
 
   useEffect(() => {
     if (params.userId) {
@@ -21,11 +21,11 @@ function UserLastGamesPage() {
     }
   }, [params.userId, userLastGames]);
 
-  if (loadingGames) {
+  if (loading) {
     return <Loader />;
   }
 
-  if (games.length === 0) {
+  if (!games) {
     return <NotFoundPage />;
   }
 

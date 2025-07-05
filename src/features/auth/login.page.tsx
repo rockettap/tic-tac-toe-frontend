@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { toast } from "sonner";
 
@@ -14,6 +14,7 @@ function LoginPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  const location = useLocation();
   const navigate = useNavigate();
 
   const { loginUser, loading } = useLogin();
@@ -23,6 +24,10 @@ function LoginPage() {
     if (!x) {
       toast.error("Помилка!");
     } else {
+      navigate(location.state?.from || ROUTES.HOME, {
+        replace: true,
+      });
+
       setEmail("");
       setPassword("");
     }

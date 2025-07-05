@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { toast } from "sonner";
 
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
+import { ROUTES } from "@/shared/lib/paths";
 
 import useRegister from "@/features/auth/use-register";
 
@@ -11,15 +14,23 @@ function RegisterPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  useEffect(() => {
-    console.log(import.meta.env.VITE_API_URL);
-  }, []);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const { registerUser, loading } = useRegister();
 
   const handleRegister = async () => {
     const x = await registerUser(email, password);
-    if (!x) toast.error("Помилка!");
+    if (!x) {
+      toast.error("Помилка!");
+    } else {
+      navigate(location.state?.from || ROUTES.HOME, {
+        replace: true,
+      });
+
+      setEmail("");
+      setPassword("");
+    }
   };
 
   return (

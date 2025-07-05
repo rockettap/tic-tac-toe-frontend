@@ -20,7 +20,10 @@ function RoomJoinPage() {
 
   useEffect(() => {
     if (!session?.sub) {
-      navigate(ROUTES.LOGIN);
+      navigate(ROUTES.LOGIN, {
+        state: { from: location.pathname },
+        replace: true,
+      });
     }
   }, [session, navigate]);
 

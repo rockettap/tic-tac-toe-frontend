@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 
 import { api } from "@/shared/api/client";
 
-interface Player {
+export interface Player {
   userId: string;
   mark: "X" | "O";
 }
@@ -25,7 +25,7 @@ interface Game {
 
 const useGames = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<Game[] | undefined>([]);
 
   const userLastGames = useCallback(async (userId: string) => {
     setLoading(true);
@@ -37,19 +37,19 @@ const useGames = () => {
         },
       });
 
-      if (response.data) {
+      if (response.status === 200) {
         setGames(response.data);
         setLoading(false);
-        return response.data;
+        return true;
       } else {
         setGames([]);
         setLoading(false);
-        return null;
+        return false;
       }
     } catch {
-      setGames([]);
+      setGames(undefined);
       setLoading(false);
-      return null;
+      return false;
     }
   }, []);
 

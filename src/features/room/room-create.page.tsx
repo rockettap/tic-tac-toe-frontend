@@ -10,15 +10,27 @@ import useAuthStore from "@/shared/use-auth-store";
 function RoomCreatePage() {
   // TODO: ProtectedRoute
   const navigate = useNavigate();
-  const { session } = useAuthStore();
+  const { session, refreshToken } = useAuthStore();
 
   useEffect(() => {
     if (!session?.sub) {
-      navigate(ROUTES.LOGIN);
+      navigate(ROUTES.LOGIN, {
+        state: { from: location.pathname },
+        replace: true,
+      });
     }
   }, [session, navigate]);
 
   const handleCreateGame = async () => {
+    const success = await refreshToken();
+
+    if (!success || !session?.sub) {
+      navigate(ROUTES.LOGIN, {
+        state: { from: location.pathname },
+        replace: true,
+      });
+    }
+
     try {
       const response = await api.post(`/rooms`);
 

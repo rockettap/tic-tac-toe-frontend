@@ -12,10 +12,15 @@ import type { PathParams, ROUTES } from "@/shared/lib/paths";
 import { Board } from "@/features/board";
 import { Component as NotFoundPage } from "@/features/not-found/not-found.page";
 
+import type { Player } from "../user/use-games";
+
 function GamePage() {
   const params = useParams<PathParams[typeof ROUTES.GAME]>();
-  const [boardState, setBoardState] = useState<(null | "X" | "O")[][]>([]);
+  const [boardState, setBoardState] = useState<("X" | "O" | null)[][]>([]);
   const [currentMove, setCurrentMove] = useState<number>(0);
+  const [winner, setWinner] = useState<Player | "Draw" | null | undefined>(
+    undefined,
+  );
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -25,14 +30,16 @@ function GamePage() {
       try {
         const response = await api.get(`/games/${params.gameId}`);
         if (response.data) {
-          const q: (null | "X" | "O")[][] = response.data.board.history;
+          const q: ("X" | "O" | null)[][] = response.data.board.history;
           q.push([null, null, null, null, null, null, null, null, null]);
           setBoardState(q);
           setCurrentMove(q.length - 1);
+          setWinner(response.data.winner);
           setLoading(false);
         }
       } catch {
         setBoardState([]);
+        setWinner(undefined);
         setLoading(false);
       }
     };
@@ -57,6 +64,16 @@ function GamePage() {
       </div>
 
       {<Board state={boardState[currentMove]} notAllowed={true} />}
+
+      {winner !== undefined && (
+        <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mb-6">
+          {typeof winner === "object" && winner !== null ? (
+            <>winner.userId={winner.userId}</>
+          ) : (
+            <>winner={JSON.stringify(winner)}</>
+          )}
+        </pre>
+      )}
 
       <div className="flex gap-4 my-4">
         <Button
