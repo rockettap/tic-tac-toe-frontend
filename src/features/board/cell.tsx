@@ -1,8 +1,11 @@
 import CircleIcon from "@/assets/circle.min.svg";
 import CrossIcon from "@/assets/cross.min.svg";
 
+export type Mark = "X" | "O";
+export type MarkOrNull = Mark | null;
+
 type CellProps = {
-  value: null | "X" | "O";
+  value: MarkOrNull;
   notAllowed: boolean;
   onSquareClick: () => void;
 };
@@ -10,7 +13,7 @@ type CellProps = {
 function Cell({ value, onSquareClick, notAllowed }: CellProps) {
   return (
     <div
-      className={`w-24 h-24 rounded-[3px] flex items-center justify-center bg-neutral-200 dark:bg-neutral-800 ${
+      className={`aspect-square rounded-[3px] flex items-center justify-center bg-neutral-200 dark:bg-neutral-800 ${
         notAllowed ? "cursor-not-allowed" : "cursor-pointer"
       }`}
       onClick={!notAllowed ? onSquareClick : undefined}

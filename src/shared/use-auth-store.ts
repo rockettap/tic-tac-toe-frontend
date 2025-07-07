@@ -18,7 +18,7 @@ interface AuthState {
 }
 
 const isTokenExpired = (exp: number) => {
-  return Date.now() >= exp * 1000;
+  return Date.now() >= (exp - 5) * 1000;
 };
 
 const useAuthStore = create<AuthState>((set, get) => {
@@ -44,7 +44,6 @@ const useAuthStore = create<AuthState>((set, get) => {
 
       if (!isTokenExpired(session.exp)) return true;
 
-      console.warn("refreshToken");
       try {
         const res = await api.post(
           "/auth/refresh",
@@ -53,6 +52,7 @@ const useAuthStore = create<AuthState>((set, get) => {
             withCredentials: true,
           },
         );
+        console.warn("refreshToken");
         login(res.data.access_token);
         return true;
       } catch {

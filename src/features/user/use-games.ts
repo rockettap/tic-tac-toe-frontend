@@ -2,15 +2,17 @@ import { useCallback, useState } from "react";
 
 import { api } from "@/shared/api/client";
 
-export interface Player {
+import type { Mark, MarkOrNull } from "@/features/board";
+
+export type Player = {
   userId: string;
-  mark: "X" | "O";
-}
+  mark: Mark;
+};
 
 interface Board {
-  cells: ("X" | "O" | null)[];
-  history: ("X" | "O" | null)[][];
-  currentTurn: "X" | "O";
+  cells: MarkOrNull[];
+  history: MarkOrNull[][];
+  currentTurn: Mark;
 }
 
 interface Game {
@@ -18,7 +20,7 @@ interface Game {
   players: Player[];
   board: Board;
   status: "IN_PROGRESS" | "FINISHED" | "INTERRUPTED";
-  winner: "X" | "O" | "Draw" | null;
+  winner: Mark | "Draw" | null;
   createdAt: Date;
   updatedAt: Date;
 }

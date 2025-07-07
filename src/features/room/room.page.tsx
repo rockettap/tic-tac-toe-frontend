@@ -11,14 +11,19 @@ import { Button } from "@/shared/components/ui/button";
 import { type PathParams, ROUTES } from "@/shared/lib/paths";
 import useAuthStore from "@/shared/use-auth-store";
 
-import { Board } from "@/features/board";
+import { Board, type Mark, type MarkOrNull } from "@/features/board";
+
+type Player = {
+  userId: string;
+  value: MarkOrNull;
+};
 
 function RoomPage() {
   const params = useParams<PathParams[typeof ROUTES.ROOM]>();
   const [disconnected, setDisconnected] = useState(false);
   const [gameIsActive, setGameIsActive] = useState(false);
-  const [users, setUsers] = useState<string[]>([]);
-  const [boardState, setBoardState] = useState<(null | "X" | "O")[]>(
+  const [users, setUsers] = useState<Player[]>([]);
+  const [boardState, setBoardState] = useState<MarkOrNull[]>(
     Array(9).fill(null),
   );
   const [url, setUrl] = useState("");
@@ -26,36 +31,31 @@ function RoomPage() {
   const navigate = useNavigate();
   const { session, refreshToken } = useAuthStore();
 
-  const [isReady, setIsReady] = useState<boolean>(false);
-
-  const refreshAndSetReady = async () => {
-    const success = await refreshToken();
-    if (success) {
-      setIsReady(true);
+  useEffect(() => {
+    if (!session?.sub) {
+      navigate(ROUTES.LOGIN, {
+        state: { from: location.pathname },
+        replace: true,
+      });
     }
-  };
 
-  useEffect(() => {
-    refreshAndSetReady();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!isReady) return;
+    QRCode.toDataURL(window.location.href, {
+      errorCorrectionLevel: "L",
+    }).then(setUrl);
 
     const socket = io(API_BASE_URL, {
-      query: { token: useAuthStore.getState().token, roomId: params.roomId },
+      query: {
+        roomId: params.roomId,
+      },
+      auth: async (cb) => {
+        await refreshToken();
+        cb({ token: useAuthStore.getState().token });
+      },
     });
 
     socket.on("connect", () => {
       console.log("connect");
       setDisconnected(false);
-    });
-
-    socket.io.on("reconnect", () => {
-      console.warn("RECONNECT...");
-      refreshAndSetReady();
     });
 
     socket.on("disconnect", (reason) => {
@@ -64,16 +64,20 @@ function RoomPage() {
       setUsers([]);
     });
 
-    socket.on("room:joined", (userId) => {
+    socket.on("room:joined", (userId: string) => {
       console.log("room:joined", userId);
-      toast.info(`${userId} joined the room.`);
-      setUsers((prev) => (prev.includes(userId) ? prev : [...prev, userId]));
+      toast.info(`${userId} приєднався до кімнати.`);
+      setUsers((prev) =>
+        prev.some((player) => player.userId === userId)
+          ? prev
+          : [...prev, { userId, value: null }],
+      );
     });
 
-    socket.on("room:left", (userId) => {
+    socket.on("room:left", (userId: string) => {
       console.log("room:left", userId);
-      toast.info(`${userId} left the room.`);
-      setUsers((prev) => prev.filter((id) => id !== userId));
+      toast.info(`${userId} покинув кімнату.`);
+      setUsers((prev) => prev.filter((player) => player.userId !== userId));
     });
 
     socket.on("game:moveMade", (game) => {
@@ -85,27 +89,52 @@ function RoomPage() {
 
     socket.on("room:gameStarted", (room) => {
       console.log("room:gameStarted", room);
-      setUsers(room._userIds);
+
       if (room._game) {
+        const playerMarksMap = new Map(
+          room._game.players.map((player: { userId: string; mark: Mark }) => [
+            player.userId,
+            player.mark,
+          ]),
+        );
+
+        const usersWithMarks = room._userIds.map((userId: string) => ({
+          userId,
+          value: playerMarksMap.get(userId) ?? null,
+        }));
+
         setBoardState(room._game.board.cells);
         setGameIsActive(true);
+        setUsers(usersWithMarks);
+      } else {
+        const usersWithoutMarks = room._userIds.map((userId: string) => ({
+          userId,
+          value: null,
+        }));
+
+        setUsers(usersWithoutMarks);
       }
     });
 
     socket.on("room:gameFinished", (game) => {
       console.log("room:gameFinished", game);
-      if (!game) return;
 
       if (game.winner?.userId) {
-        toast.info(`${game.winner.userId} won!`);
+        toast.info(`${game.winner.userId} виграв!`);
       } else if (game.winner === "Draw") {
-        toast.info("It's a draw!");
+        toast.info("Нічия!");
       } else {
-        toast.info("The game was interrupted.");
+        toast.info("Гру було перервано.");
       }
 
       setBoardState(Array(9).fill(null));
       setGameIsActive(false);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => ({
+          ...user,
+          value: null,
+        })),
+      );
     });
 
     socket.on("room:error", (message) => {
@@ -116,7 +145,9 @@ function RoomPage() {
     return () => {
       socket.disconnect();
     };
-  }, [isReady, params.roomId]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const makeMove = async (row: number, column: number) => {
     const success = await refreshToken();
@@ -161,20 +192,26 @@ function RoomPage() {
     <>
       <div className="overflow-x-auto overflow-y-hidden my-6">
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
-          RoomPage, roomId={params.roomId}
+          кімната {params.roomId}
         </h1>
       </div>
 
       {url && <img src={url} alt="QR Code" />}
 
       <div className="my-6">
-        <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mb-6">
-          users={JSON.stringify(users)}
-        </pre>
+        <div className="mb-4">
+          <p className="text-xs text-muted-foreground mb-1">users:</p>
+          <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold overflow-x-auto overflow-y-hidden">
+            {JSON.stringify(users, null, 2)}
+          </pre>
+        </div>
 
-        <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mb-6">
-          gameIsActive={JSON.stringify(gameIsActive)}
-        </pre>
+        <div className="mb-4">
+          <p className="text-xs text-muted-foreground mb-1">gameIsActive:</p>
+          <pre className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold overflow-x-auto overflow-y-hidden">
+            {JSON.stringify(gameIsActive)}
+          </pre>
+        </div>
 
         <Button
           disabled={gameIsActive || users.length < 2}
